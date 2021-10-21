@@ -32,7 +32,7 @@
           placeholder="点击图片更换验证码"
           style="width: 250px; margin-right: 10px"
         ></el-input>
-        <img :src="captchaUrl" />
+        <img :src="captchaUrl" @click="updateCapcha"/>
       </el-form-item>
       <el-checkbox v-model="checked" class="loginRemember">记住我</el-checkbox>
       <el-button
@@ -49,7 +49,7 @@ export default {
   name: "Login",
   data() {
     return {
-      captchaUrl: "",
+      captchaUrl: '/captcha?time='+new Date(),
       loginForm: {
         username: "admin",
         password: "",
@@ -68,6 +68,9 @@ export default {
     };
   },
   methods: {
+      updateCapcha(){
+          this.captchaUrl='/captcha?time='+new Date();
+      },
     submitLogin(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
@@ -102,5 +105,9 @@ export default {
 .loginRemember {
   text-align: left;
   margin: 0px 0px 15px 0;
+}
+.el-form-item__content{
+    display: flex;
+    align-items: center;
 }
 </style>
