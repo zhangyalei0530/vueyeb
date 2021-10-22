@@ -1,6 +1,10 @@
 <template>
   <div>
     <el-form
+      v-loading="loading"
+      element-loading-text="正在登录..."
+      element-loading-spinner="el-icon-loading"
+      element-loading-background="rgba(0, 0, 0, 0.8)"
       :rules="rules"
       ref="loginForm"
       :model="loginForm"
@@ -32,7 +36,7 @@
           placeholder="点击图片更换验证码"
           style="width: 250px; margin-right: 10px"
         ></el-input>
-        <img :src="captchaUrl" @click="updateCapcha"/>
+        <img :src="captchaUrl" @click="updateCapcha" />
       </el-form-item>
       <el-checkbox v-model="checked" class="loginRemember">记住我</el-checkbox>
       <el-button
@@ -49,35 +53,56 @@ export default {
   name: "Login",
   data() {
     return {
-      captchaUrl: '/captcha?time='+new Date(),
+      captchaUrl:
+        "https://www.fastmock.site/mock/193583abb772ed7a66234f6fdfe6fcf3/yeb/captcha" +
+        new Date(),
       loginForm: {
         username: "admin",
         password: "",
         code: "",
       },
+      loading:false,
       checked: true,
       rules: {
         username: [
-          { required: true, message: "请输入用户名", trigger: "blur" }
+          { required: true, message: "请输入用户名", trigger: "blur" },
         ],
-        password: [{ required: true, message: "请输入密码", trigger: "blur" },
-        {length:6,pattern:/^[a-zA-Z]{1}([a-zA-Z0-9]|[._]){2,5}$/,message:"请输入字母开头的1-6位密码", trigger: "blur"}
+        password: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          // {length:6,pattern:/^[a-zA-Z]{1}([a-zA-Z0-9]|[._]){2,5}$/,message:"请输入字母开头的1-6位密码", trigger: "blur"}
         ],
         code: [{ required: true, message: "请输入验证码", trigger: "blur" }],
       },
     };
   },
   methods: {
-      updateCapcha(){
-          this.captchaUrl='/captcha?time='+new Date();
-      },
-    submitLogin(formName) {
-      this.$refs[formName].validate((valid) => {
+    //   点击刷新验证码
+    updateCapcha() {
+      this.captchaUrl = "/captcha?time=" + new Date();
+    },
+    // 点击登录按钮
+    submitLogin() {
+      this.$refs.loginForm.validate((valid) => {
         if (valid) {
-          this.$message({
-            message: "登录成功",
-            type: "success",
-          });
+            this.loading =true;
+        //   this.postRequest("/login", this.loginForm).then((resp) => {
+        //     if (resp) {
+        //         this.loading=false;
+        //       const tokenStr = resp.obj.tokenHead + resp.obj.token;
+        //       //   把token存放到sessionStorage中，方便api.js中获取token
+        //       window.sessionStorage.setItem("tokenStr", tokenStr);
+        //       //   跳转首页
+        //       this.$router.replace("/home");
+        //     }
+        //   });
+        setTimeout(() => {
+            this.loading=false;
+            this.$message({
+              message: "登录成功",
+              type: "success",
+            });
+            this.$router.replace("/home");
+        }, 1000);
         } else {
           this.$message.error("请输入信息");
           return false;
@@ -106,8 +131,8 @@ export default {
   text-align: left;
   margin: 0px 0px 15px 0;
 }
-.el-form-item__content{
-    display: flex;
-    align-items: center;
+.el-form-item__content {
+  display: flex;
+  align-items: center;
 }
 </style>
